@@ -1,0 +1,6 @@
+{
+  "name": "Той Шақыру — Шыңғыс & Ақжан",
+  "description": "Шыңғыс пен Ақжанның үйлену тойына арналған заманауи интерактивті шақыру сайты",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

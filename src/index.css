@@ -1,0 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Cormorant Garamond", "Playfair Display", serif;
+  --font-sans: "Montserrat", "Inter", sans-serif;
+  
+  --color-gold-50: #fcf9f4;
+  --color-gold-100: #f4edd4;
+  --color-gold-200: #e8dbb0;
+  --color-gold-500: #c5a880;
+  --color-gold-600: #b59468;
+  --color-gold-700: #9e7b4f;
+  --color-gold-900: #59442a;
+}
+
+@layer utilities {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 15s linear infinite;
+}
+
+/* Elegant radial gradients and premium organic gold-veined marble texture */
+.bg-wedding-gradient {
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.96) 40%, rgba(250, 247, 240, 0.94) 100%);
+}
+
+.bg-marble {
+  background-color: #fbf9f4;
+  background-image: url('/src/assets/images/white_marble_bg_1779701161104.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+}
+
+.text-gold-gradient {
+  background: linear-gradient(135deg, #c5a880 0%, #9e7b4f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
