@@ -6,8 +6,8 @@ import Countdown from './Countdown';
 import { InvitationConfig, RSVPResponse } from '../types';
 
 // Use direct asset string constants to keep TypeScript compiler happy
-const weddingHandsImg = '/src/assets/images/wedding_hands_1779698518970.png';
-const watercolorRoseImg = '/src/assets/images/white_rose_water_color_1779698545103.png';
+const weddingHandsImg = '/wedding-invatation3/wedding_hands_1779698518970.png';
+const watercolorRoseImg = '/wedding-invatation3/white_rose_water_color_1779698545103.png';
 
 interface DecorativeFlowerProps {
   className?: string;
@@ -107,7 +107,7 @@ export default function InvitationPreview({ config, onRSVPAdded }: InvitationPre
   };
 
   return (
-    <div className="relative w-full h-full overflow-y-auto no-scrollbar bg-marble text-gray-800 selection:bg-gold-200">
+    <div className="relative w-full max-w-[480px] mx-auto h-full overflow-y-auto no-scrollbar bg-marble text-gray-800 selection:bg-gold-200 md:shadow-[0_0_60px_rgba(90,68,42,0.07)] md:border-l md:border-r md:border-[#ebdcb3]/30">
       {/* Background Audio */}
       <audio ref={audioRef} preload="auto" />
 
