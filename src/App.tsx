@@ -9,10 +9,10 @@ const INITIAL_CONFIG: InvitationConfig = {
   weddingTime: '17:00',
   weddingYear: '2026',
   weddingMonthName: 'Тамыз',
-  locationName: 'Строящееся административное здание',
+  locationName: 'Атагельды Исмаилова көшесі, LUXOR мейрамханасы',
   locationAddress: 'Алматы қаласы (2GIS картасы нүктесі бойынша)',
   mapUrl: 'https://2gis.kz/almaty/geo/70030076996008465/77.043740,43.309045',
-  parentsName: 'Әлібек - Гүлсара',
+  parentsName: 'Өмірбек - Меруерт',
   audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3',
   accentColor: 'gold'
 };

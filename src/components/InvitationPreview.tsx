@@ -6,7 +6,7 @@ import Countdown from './Countdown';
 import { InvitationConfig, RSVPResponse } from '../types';
 
 // Use direct asset string constants to keep TypeScript compiler happy
-const weddingHandsImg = '/wedding-invatation3/wedding_hands_1779698518970.png';
+const weddingHandsImg = '/wedding-invatation3/wedding_hands_1779698518970.jpeg';
 const watercolorRoseImg = '/wedding-invatation3/white_rose_water_color_1779698545103.png';
 
 interface DecorativeFlowerProps {

@@ -8,7 +8,7 @@ export interface InvitationConfig {
   locationName: string;
   locationAddress: string;
   mapUrl: string;
-  parentsName: string; // e.g. "Әлібек - Гүлсара" or empty
+  parentsName: string; // e.g. "Өмірбек - Меруерт" or empty
   audioUrl: string;
   accentColor: 'gold' | 'pink' | 'emerald' | 'burgundy';
 }

@@ -237,7 +237,7 @@ export default function InvitationEditor({
                   type="text"
                   value={config.parentsName}
                   onChange={(e) => handleInputChange('parentsName', e.target.value)}
-                  placeholder="мысалы Әлібек - Гүлсара (бос қалдырсаңыз шақырудан жойылады)"
+                  placeholder="мысалы Өмірбек - Меруерт (бос қалдырсаңыз шақырудан жойылады)"
                   className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm font-semibold focus:outline-none focus:border-[#9e7b4f]"
                 />
               </div>
