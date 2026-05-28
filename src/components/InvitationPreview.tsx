@@ -50,22 +50,64 @@ export default function InvitationPreview({ config, onRSVPAdded }: InvitationPre
   const month = parseInt(dateParts[1]) || 8;
   const day = parseInt(dateParts[2]) || 25;
 
-  // Sync background audio element
+  // Sync background audio element + Autoplay Fix
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.src = config.audioUrl;
+    // Инициализируем аудио элемент, если его еще нет
+    if (!audioRef.current) {
+      audioRef.current = new Audio(config.audioUrl);
       audioRef.current.loop = true;
-      if (isPlaying) {
-        audioRef.current.play().catch(() => {
-          setIsPlaying(false);
-        });
-      }
+    } else {
+      // Если url изменился в админке, обновляем источник
+      audioRef.current.src = config.audioUrl;
     }
+
+    // Функция для попытки автоматического запуска
+    const attemptAutoplay = () => {
+      if (!audioRef.current) return;
+
+      audioRef.current.play()
+        .then(() => {
+          setIsPlaying(true);
+          // Как только музыка успешно заиграла — убираем глобальные слушатели
+          removeInteractionListeners();
+        })
+        .catch((err) => {
+          console.log("Автовоспроизведение ожидает взаимодействия пользователя...");
+        });
+    };
+
+    // Слушатели для активации звука при первом же действии на сайте
+    const handleUserInteraction = () => {
+      attemptAutoplay();
+    };
+
+    const removeInteractionListeners = () => {
+      window.removeEventListener('click', handleUserInteraction);
+      window.removeEventListener('touchstart', handleUserInteraction);
+      window.removeEventListener('scroll', handleUserInteraction);
+    };
+
+    // 1. Пробуем запуститься сразу (на случай, если браузер позволит)
+    attemptAutoplay();
+
+    // 2. Если браузер заблокировал — запускаем при первом клике, тапе или скролле
+    window.addEventListener('click', handleUserInteraction);
+    window.addEventListener('touchstart', handleUserInteraction);
+    window.addEventListener('scroll', handleUserInteraction);
+
+    // Чистим память при демонтаже компонента
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+      removeInteractionListeners();
+    };
   }, [config.audioUrl]);
 
-  // Handle Play/Pause
+  // Handle Play/Pause (Ручное управление кнопкой)
   const toggleAudio = () => {
     if (!audioRef.current) return;
+
     if (isPlaying) {
       audioRef.current.pause();
       setIsPlaying(false);
@@ -74,71 +116,69 @@ export default function InvitationPreview({ config, onRSVPAdded }: InvitationPre
         .then(() => setIsPlaying(true))
         .catch((err) => {
           console.error("Audio playback blocked or failed:", err);
-          // Try to handle user gesture constraint
-          alert("Музыканы қосу үшін экранды басыңыз немесе қайта көріңіз.");
         });
     }
   };
 
   // Submit RSVP
   const handleRSVPSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!guestName.trim()) return;
+    e.preventDefault();
+    if (!guestName.trim()) return;
 
-  // 1. НАСТРОЙКА ТЕЛЕГРАМА (Вставьте свои данные сюда)
-  const TELEGRAM_BOT_TOKEN = '8100500156:AAHxsddijDRn0zcaKU048apqa6dU1NH7Bp4'; 
-  const TELEGRAM_CHAT_ID = '1198060039';
+    // 1. НАСТРОЙКА ТЕЛЕГРАМА (Вставьте свои данные сюда)
+    const TELEGRAM_BOT_TOKEN = '8100500156:AAHxsddijDRn0zcaKU048apqa6dU1NH7Bp4';
+    const TELEGRAM_CHAT_ID = '1198060039';
 
-  // Красивый текст статуса для сообщения
-  let statusText = '';
-  if (rsvpStatus === 'yes') statusText = '✅ Әрине, келемін!';
-  if (rsvpStatus === 'with_partner') statusText = '👩‍❤️‍👨 Жұбайыммен (жұбыммен) барамын';
-  if (rsvpStatus === 'no') statusText = '❌ Өкінішке орай, келе алмаймын';
+    // Красивый текст статуса для сообщения
+    let statusText = '';
+    if (rsvpStatus === 'yes') statusText = '✅ Әрине, келемін!';
+    if (rsvpStatus === 'with_partner') statusText = '👩‍❤️‍👨 Жұбайыммен (жұбыммен) барамын';
+    if (rsvpStatus === 'no') statusText = '❌ Өкінішке орай, келе алмаймын';
 
-  const message = `
+    const message = `
 🔔 **Жаңа жауап (Шынгыс той):**
 👤 **Қонақ:** ${guestName.trim()}
 ❓ **Таңдауы:** ${statusText}
 ⏰ **Уақыты:** ${new Date().toLocaleString('kk-KZ')}
   `.trim();
 
-  // 2. ОТПРАВКА В ТЕЛЕГРАМ
-  try {
-    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: TELEGRAM_CHAT_ID,
-        text: message,
-        parse_mode: 'Markdown',
-      }),
-    });
-  } catch (error) {
-    console.error('Ошибка отправки в Telegram:', error);
-    // Не блокируем гостя, даже если телеграм заглючил, пускай форма отправится локально
-  }
+    // 2. ОТПРАВКА В ТЕЛЕГРАМ
+    try {
+      await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: TELEGRAM_CHAT_ID,
+          text: message,
+          parse_mode: 'Markdown',
+        }),
+      });
+    } catch (error) {
+      console.error('Ошибка отправки в Telegram:', error);
+      // Не блокируем гостя, даже если телеграм заглючил, пускай форма отправится локально
+    }
 
-  // 3. ВАШ СТАРЫЙ КОД (Сохранение в localStorage)
-  const newRSVP: RSVPResponse = {
-    id: Math.random().toString(36).substring(2, 9),
-    guestName: guestName.trim(),
-    status: rsvpStatus,
-    timestamp: new Date().toLocaleString('kk-KZ')
+    // 3. ВАШ СТАРЫЙ КОД (Сохранение в localStorage)
+    const newRSVP: RSVPResponse = {
+      id: Math.random().toString(36).substring(2, 9),
+      guestName: guestName.trim(),
+      status: rsvpStatus,
+      timestamp: new Date().toLocaleString('kk-KZ')
+    };
+
+    const existingList = localStorage.getItem('wedding_rsvps');
+    const rsvps = existingList ? JSON.parse(existingList) : [];
+    rsvps.unshift(newRSVP);
+    localStorage.setItem('wedding_rsvps', JSON.stringify(rsvps));
+
+    if (onRSVPAdded) {
+      onRSVPAdded(newRSVP);
+    }
+
+    // Сбрасываем форму и показываем экран "Рақмет"
+    setIsSubmitted(true);
+    setGuestName('');
   };
-
-  const existingList = localStorage.getItem('wedding_rsvps');
-  const rsvps = existingList ? JSON.parse(existingList) : [];
-  rsvps.unshift(newRSVP);
-  localStorage.setItem('wedding_rsvps', JSON.stringify(rsvps));
-
-  if (onRSVPAdded) {
-    onRSVPAdded(newRSVP);
-  }
-
-  // Сбрасываем форму и показываем экран "Рақмет"
-  setIsSubmitted(true);
-  setGuestName('');
-};
 
   return (
     <div className="relative w-full max-w-[480px] mx-auto h-full overflow-y-auto no-scrollbar bg-marble text-gray-800 selection:bg-gold-200 md:shadow-[0_0_60px_rgba(90,68,42,0.07)] md:border-l md:border-r md:border-[#ebdcb3]/30">
@@ -213,10 +253,10 @@ export default function InvitationPreview({ config, onRSVPAdded }: InvitationPre
             <h1 className="font-serif italic text-4xl md:text-5xl font-medium tracking-wide text-gray-900 leading-tight">
               {config.groomName}
             </h1>
-            
+
             {/* Elegant Ampersand / Divider */}
             <span className="font-serif italic text-xl md:text-2xl text-[#b59468] my-1 font-light">&</span>
-            
+
             {/* Bride Name */}
             <h1 className="font-serif italic text-4xl md:text-5xl font-medium tracking-wide text-gray-900 leading-tight">
               {config.brideName}
@@ -228,7 +268,7 @@ export default function InvitationPreview({ config, onRSVPAdded }: InvitationPre
             <span className="font-sans text-[11px] font-semibold text-gray-500 tracking-[0.3em] uppercase block mb-1">
               WEDDING DAY
             </span>
-            
+
             <span className="font-serif text-lg tracking-widest text-[#9e7b4f] font-medium">
               {config.weddingDate.split('-').reverse().join('.')}
             </span>
@@ -237,7 +277,7 @@ export default function InvitationPreview({ config, onRSVPAdded }: InvitationPre
             <p className="font-serif text-xs italic text-gray-500 tracking-wider mt-6 font-medium">
               ЖОҒАРЫ КӨТЕРІҢІЗ
             </p>
-            
+
             {/* Bouncing Chevron scroll hint */}
             <motion.div
               animate={{ y: [0, 5, 0] }}
@@ -440,9 +480,8 @@ export default function InvitationPreview({ config, onRSVPAdded }: InvitationPre
                       onChange={() => setRsvpStatus('yes')}
                       className="sr-only"
                     />
-                    <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${
-                      rsvpStatus === 'yes' ? 'border-[#9e7b4f] bg-[#faedd4]' : 'border-gray-300'
-                    }`}>
+                    <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${rsvpStatus === 'yes' ? 'border-[#9e7b4f] bg-[#faedd4]' : 'border-gray-300'
+                      }`}>
                       {rsvpStatus === 'yes' && <div className="w-2.5 h-2.5 rounded-full bg-[#9e7b4f]" />}
                     </div>
                     <span className="font-serif text-sm font-medium text-gray-800">
@@ -458,9 +497,8 @@ export default function InvitationPreview({ config, onRSVPAdded }: InvitationPre
                       onChange={() => setRsvpStatus('with_partner')}
                       className="sr-only"
                     />
-                    <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${
-                      rsvpStatus === 'with_partner' ? 'border-[#9e7b4f] bg-[#faedd4]' : 'border-gray-300'
-                    }`}>
+                    <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${rsvpStatus === 'with_partner' ? 'border-[#9e7b4f] bg-[#faedd4]' : 'border-gray-300'
+                      }`}>
                       {rsvpStatus === 'with_partner' && <div className="w-2.5 h-2.5 rounded-full bg-[#9e7b4f]" />}
                     </div>
                     <span className="font-serif text-sm font-medium text-gray-800">
@@ -476,9 +514,8 @@ export default function InvitationPreview({ config, onRSVPAdded }: InvitationPre
                       onChange={() => setRsvpStatus('no')}
                       className="sr-only"
                     />
-                    <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${
-                      rsvpStatus === 'no' ? 'border-[#9e7b4f] bg-[#faedd4]' : 'border-gray-300'
-                    }`}>
+                    <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${rsvpStatus === 'no' ? 'border-[#9e7b4f] bg-[#faedd4]' : 'border-gray-300'
+                      }`}>
                       {rsvpStatus === 'no' && <div className="w-2.5 h-2.5 rounded-full bg-[#9e7b4f]" />}
                     </div>
                     <span className="font-serif text-sm font-medium text-gray-800">
