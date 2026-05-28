@@ -81,30 +81,64 @@ export default function InvitationPreview({ config, onRSVPAdded }: InvitationPre
   };
 
   // Submit RSVP
-  const handleRSVPSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!guestName.trim()) return;
+  const handleRSVPSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!guestName.trim()) return;
 
-    const newRSVP: RSVPResponse = {
-      id: Math.random().toString(36).substring(2, 9),
-      guestName: guestName.trim(),
-      status: rsvpStatus,
-      timestamp: new Date().toLocaleString('kk-KZ')
-    };
+  // 1. НАСТРОЙКА ТЕЛЕГРАМА (Вставьте свои данные сюда)
+  const TELEGRAM_BOT_TOKEN = '8643775657:AAHkC9cKd-ZASePIge_Gv5IRl_CzzT0-9wk'; 
+  const TELEGRAM_CHAT_ID = '8251442133';
 
-    // Save to local storage list
-    const existingList = localStorage.getItem('wedding_rsvps');
-    const rsvps = existingList ? JSON.parse(existingList) : [];
-    rsvps.unshift(newRSVP);
-    localStorage.setItem('wedding_rsvps', JSON.stringify(rsvps));
+  // Красивый текст статуса для сообщения
+  let statusText = '';
+  if (rsvpStatus === 'yes') statusText = '✅ Әрине, келемін!';
+  if (rsvpStatus === 'with_partner') statusText = '👩‍❤️‍👨 Жұбайыммен (жұбыммен) барамын';
+  if (rsvpStatus === 'no') statusText = '❌ Өкінішке орай, келе алмаймын';
 
-    if (onRSVPAdded) {
-      onRSVPAdded(newRSVP);
-    }
+  const message = `
+🔔 **Жаңа жауап (Ұзату той):**
+👤 **Қонақ:** ${guestName.trim()}
+❓ **Таңдауы:** ${statusText}
+⏰ **Уақыты:** ${new Date().toLocaleString('kk-KZ')}
+  `.trim();
 
-    setIsSubmitted(true);
-    setGuestName('');
+  // 2. ОТПРАВКА В ТЕЛЕГРАМ
+  try {
+    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text: message,
+        parse_mode: 'Markdown',
+      }),
+    });
+  } catch (error) {
+    console.error('Ошибка отправки в Telegram:', error);
+    // Не блокируем гостя, даже если телеграм заглючил, пускай форма отправится локально
+  }
+
+  // 3. ВАШ СТАРЫЙ КОД (Сохранение в localStorage)
+  const newRSVP: RSVPResponse = {
+    id: Math.random().toString(36).substring(2, 9),
+    guestName: guestName.trim(),
+    status: rsvpStatus,
+    timestamp: new Date().toLocaleString('kk-KZ')
   };
+
+  const existingList = localStorage.getItem('wedding_rsvps');
+  const rsvps = existingList ? JSON.parse(existingList) : [];
+  rsvps.unshift(newRSVP);
+  localStorage.setItem('wedding_rsvps', JSON.stringify(rsvps));
+
+  if (onRSVPAdded) {
+    onRSVPAdded(newRSVP);
+  }
+
+  // Сбрасываем форму и показываем экран "Рақмет"
+  setIsSubmitted(true);
+  setGuestName('');
+};
 
   return (
     <div className="relative w-full max-w-[480px] mx-auto h-full overflow-y-auto no-scrollbar bg-marble text-gray-800 selection:bg-gold-200 md:shadow-[0_0_60px_rgba(90,68,42,0.07)] md:border-l md:border-r md:border-[#ebdcb3]/30">
