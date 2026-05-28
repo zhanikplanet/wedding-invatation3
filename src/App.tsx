@@ -13,7 +13,7 @@ const INITIAL_CONFIG: InvitationConfig = {
   locationAddress: 'Алматы қаласы (2GIS картасы нүктесі бойынша)',
   mapUrl: 'https://2gis.kz/almaty/geo/70030076996008465/77.043740,43.309045',
   parentsName: 'Өмірбек - Меруерт',
-  audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3',
+  audioUrl: '/wedding-invatation3/mahabbat-degen.mp3',
   accentColor: 'gold'
 };
 
