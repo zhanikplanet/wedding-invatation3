@@ -86,8 +86,8 @@ export default function InvitationPreview({ config, onRSVPAdded }: InvitationPre
   if (!guestName.trim()) return;
 
   // 1. НАСТРОЙКА ТЕЛЕГРАМА (Вставьте свои данные сюда)
-  const TELEGRAM_BOT_TOKEN = '8643775657:AAHkC9cKd-ZASePIge_Gv5IRl_CzzT0-9wk'; 
-  const TELEGRAM_CHAT_ID = '8251442133';
+  const TELEGRAM_BOT_TOKEN = '8100500156:AAHxsddijDRn0zcaKU048apqa6dU1NH7Bp4'; 
+  const TELEGRAM_CHAT_ID = '1198060039';
 
   // Красивый текст статуса для сообщения
   let statusText = '';
