@@ -96,7 +96,7 @@ export default function InvitationPreview({ config, onRSVPAdded }: InvitationPre
   if (rsvpStatus === 'no') statusText = '❌ Өкінішке орай, келе алмаймын';
 
   const message = `
-🔔 **Жаңа жауап (Ұзату той):**
+🔔 **Жаңа жауап (Шынгыс той):**
 👤 **Қонақ:** ${guestName.trim()}
 ❓ **Таңдауы:** ${statusText}
 ⏰ **Уақыты:** ${new Date().toLocaleString('kk-KZ')}
