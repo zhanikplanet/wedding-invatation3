@@ -10,7 +10,7 @@ const INITIAL_CONFIG: InvitationConfig = {
   weddingYear: '2026',
   weddingMonthName: 'Тамыз',
   locationName: 'Атагельды Исмаилова көшесі, LUXOR мейрамханасы',
-  locationAddress: 'Алматы қаласы (2GIS картасы нүктесі бойынша)',
+  locationAddress: '(Бухтарминская)',
   mapUrl: 'https://2gis.kz/almaty/geo/70030076996008465/77.043740,43.309045',
   parentsName: 'Өмірбек - Меруерт',
   audioUrl: '/wedding-invatation3/mahabbat-degen.mp3',
